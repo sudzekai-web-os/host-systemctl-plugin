@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PublishAot>true</PublishAot>
+    <NativeLibrary>Shared</NativeLibrary>
+    <Version>0.1.0</Version>
+    <SystemctlLibraryExtension Condition="$([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('linux-'))">so</SystemctlLibraryExtension>
+    <SystemctlLibraryExtension Condition="'$(SystemctlLibraryExtension)' == ''">dll</SystemctlLibraryExtension>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
+    <PackageReference Include="Sudzekai.LinCtrl.Assembly" Version="0.5.0" />
+  </ItemGroup>
+
+  <Target Name="WritePluginManifest" AfterTargets="Publish">
+    <WriteLinesToFile File="$(PublishDir)manifest.json"
+                      Lines='{ "name": "Systemctl", "version": "$(Version)", "summary": "Управление службами systemd", "assemblies": ["SystemctlPlugin.$(SystemctlLibraryExtension)"] }'
+                      Overwrite="true" Encoding="UTF-8" />
+  </Target>
+
+</Project>
